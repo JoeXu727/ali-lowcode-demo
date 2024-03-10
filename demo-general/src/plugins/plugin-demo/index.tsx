@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { IPublicModelPluginContext } from '@alilc/lowcode-types';
+import { Nav } from '@alifd/next';
+
+import './index.scss';
 
 const LowcodePluginPluginDemo = (ctx: IPublicModelPluginContext) => {
+    let menuType = 'home';
+
     return {
         // 插件对外暴露的数据和方法
         exports() {
@@ -13,23 +18,37 @@ const LowcodePluginPluginDemo = (ctx: IPublicModelPluginContext) => {
             };
         },
         // 插件的初始化函数，在引擎初始化之后会立刻调用
-        init() {
+        async init() {
             // 你可以拿到其他插件暴露的方法和属性
             // const { data, func } = ctx.plugins.pluginA;
             // func();
 
             // console.log(options.name);
 
-            // 往引擎增加面板
-            ctx.skeleton.add({
+            const menuClick = (key = []) => {
+                menuType = key[0];
+                location.href = `${location.pathname}?page=${menuType}`
+            };
+
+            const { Item } = Nav;
+            let config: any = {
                 area: 'leftArea',
                 name: 'LowcodePluginPluginDemoPane',
                 type: 'PanelDock',
                 props: {
-                    description: 'Demo',
+                    description: '菜单',
                 },
-                content: <div>这是一个 Demo 面板</div>,
-            });
+                content: () => {
+                    return (
+                        <Nav type="line" onSelect={menuClick}>
+                            <Item key="home">Home</Item>
+                            <Item key="user">UserInfo</Item>
+                        </Nav>
+                    );
+                },
+            };
+            // 往引擎增加面板
+            ctx.skeleton.add(config);
 
             ctx.logger.log('打个日志');
         },

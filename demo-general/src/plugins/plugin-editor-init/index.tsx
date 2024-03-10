@@ -18,14 +18,17 @@ const EditorInitPlugin = (ctx: IPublicModelPluginContext, options: any) => {
 
       await material.setAssets(await injectAssets(assets));
 
-      const schema = await getProjectSchema(scenarioName);
+      const match = location.search.match(/\?page=([^&#]+)/);
+      const menuType = match ? match[1] : 'home';
+      const schema = await getProjectSchema(menuType, scenarioName);
       // 加载 schema
       project.importSchema(schema as any);
     },
   };
-}
+};
 EditorInitPlugin.pluginName = 'EditorInitPlugin';
 EditorInitPlugin.meta = {
+  dependencies: ['LowcodePluginPluginDemo'],
   preferenceDeclaration: {
     title: '保存插件配置',
     properties: [
@@ -43,7 +46,7 @@ EditorInitPlugin.meta = {
         key: 'info',
         type: 'object',
         description: '用于扩展信息',
-      }
+      },
     ],
   },
 };
