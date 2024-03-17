@@ -14,10 +14,24 @@ const generateProjectSchema = (pageSchema: any, i18nSchema: any): IPublicTypePro
   };
 };
 
-export const saveSchema = async (scenarioName: string = 'unknown') => {
-  setProjectSchemaToLocalStorage(scenarioName);
-  await setPackagesToLocalStorage(scenarioName);
-  Message.success('成功保存到本地');
+export const saveSchema = async (page_type: number = 1) => {
+  // const defaultCurrentPage: string = config.get('currentPage') || 'home';
+  const schema = project.exportSchema();
+  const url = 'http://127.0.0.1:7001/admin';
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      page_schema: JSON.stringify(schema),
+      page_type: page_type,
+    })
+  });
+  Message.success('成功保存页面schema');
 };
 
 export const resetSchema = async (scenarioName: string = 'unknown') => {
@@ -89,7 +103,7 @@ export const getPackagesFromLocalStorage = (scenarioName: string) => {
 };
 
 export const getProjectSchema = async (
-  pageType: string = 'home',
+  pageType: number = 1,
   scenarioName: string = 'unknown',
 ): Promise<IPublicTypeProjectSchema> => {
   const pageSchema = await getPageSchema(pageType, scenarioName);
@@ -97,20 +111,22 @@ export const getProjectSchema = async (
 };
 
 export const getPageSchema = async (
-  pageType: string = 'home',
+  pageType: number = 1,
   scenarioName: string = 'unknown',
 ) => {
   // const pageSchema = getProjectSchemaFromLocalStorage(scenarioName)?.componentsTree?.[0];
-  let url = `http://localhost:7001/${pageType}`;
-  fetchData(url).then((res) => {
-    console.log('res', res);
+  let pageSchema;
+  let url = `http://127.0.0.1:7001/admin?page_type=${pageType}`;
+  pageSchema = await fetchData(url).then((res) => {
+    let schema = JSON.parse(res.data.page_schema)
+    return schema.componentsTree[0];
   });
 
-  // if (pageSchema) {
-  //   return pageSchema;
-  // }
+  if (pageSchema) {
+    return pageSchema;
+  }
 
-  return DefaultPageSchema;
+  // return DefaultPageSchema;
 };
 
 // 调接口获取数据

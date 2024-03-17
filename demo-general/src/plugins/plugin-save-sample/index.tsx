@@ -12,6 +12,10 @@ const SaveSamplePlugin = (ctx: IPublicModelPluginContext) => {
       const { skeleton, hotkey, config } = ctx;
       const scenarioName = config.get('scenarioName');
 
+      const match = location.search.match(/\?page=([^&#]+)/);
+      const menuType = match ? match[1] : 'home';
+      const pageType = menuType === 'home' ? 1 : 2;
+
       skeleton.add({
         name: 'saveSample',
         area: 'topArea',
@@ -20,8 +24,8 @@ const SaveSamplePlugin = (ctx: IPublicModelPluginContext) => {
           align: 'right',
         },
         content: (
-          <Button onClick={() => saveSchema(scenarioName)}>
-            保存到本地
+          <Button onClick={() => saveSchema(pageType)}>
+            保存
           </Button>
         ),
       });

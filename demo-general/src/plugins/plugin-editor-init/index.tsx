@@ -20,7 +20,8 @@ const EditorInitPlugin = (ctx: IPublicModelPluginContext, options: any) => {
 
       const match = location.search.match(/\?page=([^&#]+)/);
       const menuType = match ? match[1] : 'home';
-      const schema = await getProjectSchema(menuType, scenarioName);
+      const pageType = menuType === 'home' ? 1 : 2;
+      const schema = await getProjectSchema(pageType, scenarioName);
       // 加载 schema
       project.importSchema(schema as any);
     },
