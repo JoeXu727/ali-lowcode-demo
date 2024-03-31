@@ -115,19 +115,23 @@ export const getPageSchema = async (
   scenarioName: string = 'unknown',
 ) => {
   // const pageSchema = getProjectSchemaFromLocalStorage(scenarioName)?.componentsTree?.[0];
+  const schema = await getFullSchema(pageType);
+  return schema.componentsTree[0];
+
+  // return DefaultPageSchema;
+};
+
+export const getFullSchema = async (pageType: number = 1) => {
   let pageSchema;
   let url = `http://127.0.0.1:7001/admin?page_type=${pageType}`;
   pageSchema = await fetchData(url).then((res) => {
-    let schema = JSON.parse(res.data.page_schema)
-    return schema.componentsTree[0];
+    return JSON.parse(res.data.page_schema);
   });
 
   if (pageSchema) {
     return pageSchema;
   }
-
-  // return DefaultPageSchema;
-};
+}
 
 // 调接口获取数据
 const fetchData = async (url: string) => {

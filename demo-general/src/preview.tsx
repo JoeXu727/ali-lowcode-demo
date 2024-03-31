@@ -7,7 +7,7 @@ import { buildComponents, assetBundle, AssetLevel, AssetLoader } from '@alilc/lo
 import ReactRenderer from '@alilc/lowcode-react-renderer';
 import { injectComponents } from '@alilc/lowcode-plugin-inject';
 import appHelper from './appHelper';
-import { getProjectSchemaFromLocalStorage, getPackagesFromLocalStorage, getPreviewLocale, setPreviewLocale } from './services/mockService';
+import { getProjectSchemaFromLocalStorage, getPackagesFromLocalStorage, getPreviewLocale, setPreviewLocale, getFullSchema } from './services/mockService';
 
 const getScenarioName = function () {
   if (location.search) {
@@ -15,14 +15,22 @@ const getScenarioName = function () {
   }
   return 'general';
 }
+const getPageType = function () {
+  if (location.search) {
+    let pageName = new URLSearchParams(location.search.slice(1)).get('page') || 'home';
+    return pageName === 'home' ? 1 : 2;
+  }
+  return 1;
+}
 
 const SamplePreview = () => {
   const [data, setData] = useState({});
 
   async function init() {
     const scenarioName = getScenarioName();
+    const pageType = getPageType();
     const packages = getPackagesFromLocalStorage(scenarioName);
-    const projectSchema = getProjectSchemaFromLocalStorage(scenarioName);
+    const projectSchema = await getFullSchema(pageType);
     const {
       componentsMap: componentsMapArray,
       componentsTree,
@@ -72,7 +80,7 @@ const SamplePreview = () => {
   if (!(window as any).setPreviewLocale) {
     // for demo use only, can use this in console to switch language for i18n test
     // 在控制台 window.setPreviewLocale('en-US') 或 window.setPreviewLocale('zh-CN') 查看切换效果
-    (window as any).setPreviewLocale = (locale:string) => setPreviewLocale(getScenarioName(), locale);
+    (window as any).setPreviewLocale = (locale: string) => setPreviewLocale(getScenarioName(), locale);
   }
 
   function customizer(objValue: [], srcValue: []) {
