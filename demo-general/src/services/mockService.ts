@@ -133,6 +133,33 @@ export const getFullSchema = async (pageType: number = 1) => {
   }
 }
 
+export const createBlock = async (block: any) => {
+  const url = `http://127.0.0.1:7001/block`;
+
+  // fetch(url, {
+  //   method: 'post',
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({ block })
+  // })
+
+  const res = await (await fetch(url, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ block })
+  })).json()
+  console.log('ressssssss', res);
+
+  if (res.code) {
+    console.error('create block failed: ', res);
+    return;
+  }
+  Message.success(res.message);
+}
+
 // 调接口获取数据
 const fetchData = async (url: string) => {
   try {
