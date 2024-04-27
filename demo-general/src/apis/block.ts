@@ -13,16 +13,16 @@ export const listBlocks = async () => {
     return res.data;
 }
 
-export const getBlockById = async (id) => {
-    const url = `${BASE_URL}/blocks/${id}`;
-    const res = await request(url);
-    console.log('res: ', res);
-    if (res.code) {
-        console.error('list block failed: ', res);
-        return;
-    }
-    return res.data;
-}
+// export const getBlockById = async (id) => {
+//     const url = `${BASE_URL}/blocks/${id}`;
+//     const res = await request(url);
+//     console.log('res: ', res);
+//     if (res.code) {
+//         console.error('list block failed: ', res);
+//         return;
+//     }
+//     return res.data;
+// }
 
 export const createBlock = async (block) => {
     const url = `${BASE_URL}/blocks`;

@@ -45,6 +45,7 @@ export const BlockPane = (props: BlockPaneProps) => {
         fetchBlocks();
     }, []);
 
+    // 拖拽逻辑
     const registerAdditive = (shell: HTMLDivElement | null) => {
         if (!shell || shell.dataset.registered) {
             return;
@@ -97,7 +98,7 @@ export const BlockPane = (props: BlockPaneProps) => {
 
     return <div className='block-pane' ref={registerAdditive}><Box direction='row' wrap>
         {
-            blocks.map(item => <BlockCard id={item.id} title={item.title} screenshot={item.screenshot} />)
+            blocks.map(item => <BlockCard id={item.id} name={item.name} screenshot={item.screenshot} />)
         }
     </Box>
     </div>;

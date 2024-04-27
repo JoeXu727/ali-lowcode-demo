@@ -1,36 +1,54 @@
 import * as React from 'react';
+import { default as html2canvas } from 'html2canvas';
 import { Node } from '@alilc/lowcode-engine';
 import { Dialog, Form, Input } from '@alifd/next';
 import { createBlock } from '../services/mockService';
+
+import './index.scss';
+
+const FormItem = Form.Item;
 
 interface SaveAsBlockProps {
     node: Node;
 }
 
-const FormItem = Form.Item;
-
 const SaveAsBlock = (props: SaveAsBlockProps) => {
     const { node } = props;
+    const [src, setSrc] = React.useState();
+    React.useEffect(() => {
+        const generateImage = async () => {
+            let dom2 = node.getDOMNode();
+            const canvas = await html2canvas?.(dom2, { scale: 0.5 });
+            const dataUrl = canvas.toDataURL();
+            setSrc(dataUrl);
+        };
+
+        generateImage();
+    }, []);
 
     const save = async (values) => {
         const { name, title } = values;
         const { schema } = node;
 
-        const red = await createBlock({
+        if (!name || !title) {
+            return;
+        }
+
+        await createBlock({
             schemaId: schema.id,
             name,
             title,
-            schema: JSON.stringify(schema)
+            schema: JSON.stringify(schema),
+            screenshot: src,
         })
-
     }
 
-    return <div>
+    return <div style={{ width: '450px' }}>
         <Form colon>
             <FormItem
                 name="name"
                 label="名称"
-                labelCol={{ span: 8 }}
+                labelCol={{ span: 4 }}
                 wrapperCol={{ span: 16 }}
                 required
                 requiredMessage='please input name'>
@@ -39,11 +57,20 @@ const SaveAsBlock = (props: SaveAsBlockProps) => {
             <FormItem
                 name="title"
                 label="简介"
-                labelCol={{ span: 8 }}
+                labelCol={{ span: 4 }}
                 wrapperCol={{ span: 16 }}
                 required
                 requiredMessage='please input title'>
                 <Input />
+            </FormItem>
+            <FormItem
+                name="screenshot"
+                label="缩略图"
+            >
+                <div className='block-screenshot'>
+                    <img src={src} />
+                </div>
+                <Input value={src} style={{ display: 'none' }} />
             </FormItem>
             <FormItem
                 label="" colon={false}>
@@ -63,10 +90,12 @@ const SaveAsBlock = (props: SaveAsBlockProps) => {
 export default {
     name: 'SaveAsBlock',
     content: {
-        icon: 'add',
+        icon: {
+            type: 'add',
+            size: 'xs'
+        },
         title: '保存为区块',
         action(node: Node) {
-            console.log('node', node);
             Dialog.show({
                 v2: true,
                 title: '是否保存为区块?',

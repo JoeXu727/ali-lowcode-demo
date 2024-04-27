@@ -6,19 +6,19 @@ const { useState, useEffect } = React;
 
 interface BlockCardProps {
     id: string,
-    title: string,
+    name: string,
     screenshot: string,
 }
 
 const BlockCard = (props: BlockCardProps) => {
-    const { id, title, screenshot } = props;
+    const { id, name, screenshot } = props;
 
     return <div className='block-card snippets' data-id={id}>
         <div className='block-card-screenshot'>
             <img src={screenshot} />
         </div>
         <span>
-            {title}
+            {name}
         </span>
     </div>;
 }
